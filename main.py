@@ -4,12 +4,17 @@ Probably ok with just using Standard
 """
 import csv
 import requests
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+FOOD_REQUEST_URL = os.getenv("FOOD_REQUEST_URL")
+CSM_REQUEST_URL = os.getenv("CSM_REQUEST_URL")
 
 STANDARD_FILE_PATH = "./Principal files/ASCII Text Files/Standard/Standard DATA.AP"
 CSM_FILE_PATH = "./Principal files/ASCII Text Files/CSM.FT"
 
-FOOD_REQUEST_URL = "http://localhost:3000/api/food"
-CSM_REQUEST_URL = "http://localhost:3000/api/food/csm"
 
 def safe_float(value):
     return float(value) if value != "" else 0.0
