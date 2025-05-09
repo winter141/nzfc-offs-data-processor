@@ -12,8 +12,8 @@ load_dotenv()
 FOOD_REQUEST_URL = os.getenv("FOOD_REQUEST_URL")
 CSM_REQUEST_URL = os.getenv("CSM_REQUEST_URL")
 
-STANDARD_FILE_PATH = "./Principal files/ASCII Text Files/Standard/Standard DATA.AP"
-CSM_FILE_PATH = "./Principal files/ASCII Text Files/CSM.FT"
+STANDARD_FILE_PATH = "NZFC Data/Principal files/ASCII Text Files/Standard/Standard DATA.AP"
+CSM_FILE_PATH = "NZFC Data/Principal files/ASCII Text Files/CSM.FT"
 
 
 def safe_float(value):
