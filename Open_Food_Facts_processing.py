@@ -1,6 +1,7 @@
 from base_processor import Processor
 import json
 import requests
+import time
 
 
 def kj_to_kcal(kj):
@@ -8,27 +9,38 @@ def kj_to_kcal(kj):
 
 
 class ProcessOpenFoodFactsData(Processor):
-    def __init__(self, data_file_path, food_request_url, csm_request_url):
+    def __init__(self, data_file_path, request_url):
         with open(f'{data_file_path}.json', encoding="utf-8") as file:
             data = json.load(file)
-        self.food_data = data
-        self.food_request_url = food_request_url
-        self.csm_request_url = csm_request_url
+        self.all_data = [self.__format_data(product) for product in data]
+        self.request_url = request_url
 
-        self.id_mapping = []
+        c = 0
+        for data in self.all_data:
+            if data:
+                c += 1
+        print(c)
+        print(len(self.all_data))
 
-    def __format_food(self, product):
+        self.i = 0
+
+    def __format_data(self, product):
         try:
             nutriments = product["nutriments"]
             d = {
-                "barcode": int(product["code"]),
+                "barcode": product["code"],
                 "kilocalories": nutriments["energy-kcal_100g"] if "energy-kcal_100g" in nutriments else kj_to_kcal(nutriments["energy-kj_100g"]),
                 "name": product["product_name"],
                 "carbohydrates": nutriments["carbohydrates_100g"],
                 "sugars": nutriments["sugars_100g"],
                 "fat": nutriments["fat_100g"],
-                "protein": nutriments["proteins_100g"],
+                "protein": nutriments["proteins_100g"]
             }
+
+            if "serving_size" in product and "serving_quantity" in product:
+                d["foodCsms"] = [
+                    {"csmDescription": product["serving_size"], "amount": float(product["serving_quantity"])}
+                    ]
 
             d_keys = [
                 "fibre", "alcohol", "betaCarotene", "caffeine", "calcium", "cholesterol", "copper",
@@ -51,52 +63,19 @@ class ProcessOpenFoodFactsData(Processor):
             return d
 
         except KeyError as e:
-            print(f"Missing key: {e}")
+            if "code" in product:
+                print(f"Missing key: {e} with barcode: {product['code']}")
+            else:
+                print(f"Missing key: {e} no barcode")
             return None
         except ValueError as e:
             print(f"Value error: {e}")
             return None
 
-    def __format_csm(self, product):
-        # TODO id_mapping
-        try:
-            return {
-                "foodId": 0,  # some valid id_mapping
-                "csmDescription": product["serving_size"],
-                "amount": product["serving_quantity"]
-            }
-        except KeyError as e:
-            print(f"Missing key: {e}")
-            return None
-        except ValueError as e:
-            print(f"Value error: {e}")
-            return None
-
-    def send_food_post_requests(self):
-        i = 1
-        for food in self.food_data:
-            data = self.__format_food(food)
+    def send_post_requests(self):
+        for data in self.all_data:
             if data:
-                response = requests.post(self.food_request_url, json=data)
+                response = requests.post(self.request_url, json=data)
                 print(f"Sent {data['name']}: {response.status_code} - {response.text}")
-                self.id_mapping.append((data["NZCompId"], i))
-                i += 1
             else:
                 print(f"Skipped FOOD")
-
-        print(self.id_mapping)
-
-    def send_csm_post_requests(self):
-        for product in self.food_data:
-            data = self.__format_csm(product)
-            if data:
-                response = requests.post(self.csm_request_url, json=data)
-                # print(f"Sent {data['name']}: {response.status_code} - {response.text}")
-                print(response.status_code)
-            else:
-                print(f"Skipped FOOD")
-
-
-    def print(self, num=1):
-        for product in self.food_data[:num]:
-            print(self.__format_food(product))
