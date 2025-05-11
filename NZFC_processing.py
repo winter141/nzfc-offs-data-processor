@@ -138,7 +138,8 @@ class ProcessNZFoodCompData(Processor):
             csms = []
             for csm in csm_f_data:
                 if csm["NZCompId"] == food["NZCompId"]:
-                    csms.append(csm)
+                    csm_clean = {k: v for k, v in csm.items() if k != "NZCompId"}
+                    csms.append(csm_clean)
             food["foodCsms"] = csms
             all_data.append(food)
 
