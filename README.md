@@ -1,3 +1,8 @@
+# Instructions
+- Make .env with database update request url as REQUEST_URL
+- Clear database.=
+- Run main.py
+
 # Open Food Facts Data
 
 ## Some useful fields (could be used in the future)
