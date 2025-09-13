@@ -16,7 +16,7 @@ AUSTRALIA_OPEN_FOOD_FACTS_DATA_PATH = "Open Food Facts Data/australia_food_data"
 if __name__ == "__main__":
     # NZFC DATA
     nzfc_processor = ProcessNZFoodCompData(NZFC_STANDARD_FILE_PATH, NZFC_CSM_FILE_PATH, REQUEST_URL)
-    # nzfc_processor.send_post_requests()
+    nzfc_processor.send_post_requests()
 
     # OPEN FOOD FACTS DATA
     # Sends 7464 records out of 10936
