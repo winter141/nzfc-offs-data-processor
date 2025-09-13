@@ -9,7 +9,10 @@ def kj_to_kcal(kj):
 
 
 class ProcessOpenFoodFactsData(Processor):
-    def __init__(self, data_file_path, request_url):
+    def __init__(self, data_file_path, request_url, foodDbSource, add_display_name_as_name: bool = True):
+        self.foodDbSource = foodDbSource
+        self.add_display_name_as_name = add_display_name_as_name
+
         with open(f'{data_file_path}.json', encoding="utf-8") as file:
             data = json.load(file)
         self.all_data = [self.__format_data(product) for product in data]
@@ -34,8 +37,11 @@ class ProcessOpenFoodFactsData(Processor):
                 "carbohydrates": nutriments["carbohydrates_100g"],
                 "sugars": nutriments["sugars_100g"],
                 "fat": nutriments["fat_100g"],
-                "protein": nutriments["proteins_100g"]
+                "protein": nutriments["proteins_100g"],
+                "foodDbSource": self.foodDbSource
             }
+            if self.add_display_name_as_name:
+                d["displayName"] = product["product_name"]
 
             if "serving_size" in product and "serving_quantity" in product:
                 d["foodCsms"] = [
@@ -76,6 +82,7 @@ class ProcessOpenFoodFactsData(Processor):
         for data in self.all_data:
             if data:
                 response = requests.post(self.request_url, json=data)
-                print(f"Sent {data['name']}: {response.status_code} - {response.text}")
+                # print(f"Sent {data['name']}: {response.status_code} - {response.text}")
             else:
-                print(f"Skipped FOOD")
+                pass
+                # print(f"Skipped FOOD")

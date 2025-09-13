@@ -13,6 +13,8 @@ def safe_float(value):
 
 class ProcessNZFoodCompData(Processor):
     def __init__(self, standard_file_path, csm_file_path, request_url):
+        self.foodDbSource = "NZFC"
+
         self.food_data = self.__process_ft_to_dict(standard_file_path, True)
         self.csm_data = self.__process_ft_to_dict(csm_file_path, False)
 
@@ -45,6 +47,7 @@ class ProcessNZFoodCompData(Processor):
             return {
                 "NZCompId": food["FoodID"][0],
                 "name": food["Food Name"][0],
+                "foodDbSource": self.foodDbSource,
                 "kilocalories": safe_float(food["Energy, total metabolisable (kcal, including dietary fibre)"][0]),
                 "carbohydrates": safe_float(food["Available carbohydrate, FSANZ"][0]),
                 "sugars": safe_float(food["Sugars, total"][0]),
@@ -149,6 +152,7 @@ class ProcessNZFoodCompData(Processor):
         for data in self.all_data:
             if data:
                 response = requests.post(self.request_url, json=data)
-                print(f"Sent {data['name']}: {response.status_code} - {response.text}")
+                # print(f"Sent {data['name']}: {response.status_code} - {response.text}")
             else:
-                print(f"Skipped FOOD")
+                pass
+                # print(f"Skipped FOOD")

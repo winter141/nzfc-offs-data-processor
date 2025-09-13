@@ -5,7 +5,7 @@ import time
 
 # Folder path where you want to save the data
 FOLDER_PATH = "Open Food Facts Data"
-FILE_NAME = "nz_food_data.json"
+FILE_NAME = "australia_food_data.json"
 FILE_PATH = os.path.join(FOLDER_PATH, FILE_NAME)
 
 FIELDS = [
@@ -19,7 +19,7 @@ FIELDS = [
 
 BASE_URL = "https://world.openfoodfacts.net/api/v2/search"
 PARAMS = {
-    "countries_tags_en": "new-zealand",
+    "countries_tags_en": "australia",
     "fields": ",".join(FIELDS),
     "page": 1,
     "page_size": 100
